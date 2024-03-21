@@ -1,40 +1,58 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function App() {
-  const [artist, setArtist] = useState([]);
-  const [artistName, setArtistName] = useState();
+  const [artistId, setArtistId] = useState();
+  const [answer, setAnswer] = useState();
+  const [featurings, setFeaturings] = useState();
 
-  const fetchArtistByName = async () => {
-    const url = `https://spotify23.p.rapidapi.com/search/?q=${artistName}&type=artists&offset=0&limit=10&numberOfTopResults=5`;
-    const options = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": "058441d088mshaf86c5681fd5074p1d4e7cjsn0e487ad2d27a",
-        "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
-      },
-    };
+  const checkAnswer = async () => {
+    // fetch artist id
+    const responseId = await fetch(
+      `https://spotify23.p.rapidapi.com/search/?q=${answer}&type=artists&offset=0&limit=1`,
+      {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key":
+            "058441d088mshaf86c5681fd5074p1d4e7cjsn0e487ad2d27a",
+          "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
+        },
+      }
+    );
+    const dataId = await responseId.json();
+    setArtistId(dataId.artists.items[0].data.uri.split(":")[2]);
 
-    const response = await fetch(url, options);
-    const data = await response.json();
-    setArtist(data.artists.items[0].data);
+    // fetch artist featurings
+    const responseFeat = await fetch(
+      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${
+        dataId.artists.items[0].data.uri.split(":")[2]
+      }`,
+      {
+        method: "GET",
+        headers: {
+          "X-RapidAPI-Key":
+            "058441d088mshaf86c5681fd5074p1d4e7cjsn0e487ad2d27a",
+          "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
+        },
+      }
+    );
+
+    const dataFeat = await responseFeat.json();
+    setFeaturings(dataFeat);
+    console.log(dataFeat);
   };
-
-  useEffect(() => {
-    console.log(artist);
-  }, [artist]);
 
   return (
     <div className="flex flex-col items-center">
-      <h1>Artist</h1>
+      <h1>booba</h1>
       <input
         type="text"
         className="border-black border-2"
-        onChange={(event) => setArtistName(event.target.value)}
+        onChange={(event) => setAnswer(event.target.value)}
       />
-      <button onClick={fetchArtistByName}>Search</button>
-      {artist && (
+      <button onClick={checkAnswer}>Search</button>
+      {artistId && (
         <div>
-          <h2>{artist.profile.name}</h2>
+          <h2>{artistId}</h2>
         </div>
       )}
     </div>
