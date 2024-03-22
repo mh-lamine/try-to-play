@@ -1,9 +1,10 @@
 import { useState } from "react";
+import ValidationText from "./components/ValidationText";
 
 export default function App() {
-  const [artistId, setArtistId] = useState();
+  const [currentArtist, setCurrentArtist] = useState("booba");
   const [answer, setAnswer] = useState();
-  const [featurings, setFeaturings] = useState([]);
+  const [hasFeated, setHasFeated] = useState();
   const [loading, setLoading] = useState(false);
 
   const getArtistId = async () => {
@@ -18,15 +19,14 @@ export default function App() {
         },
       }
     );
-    const result = await response.json();
-    setArtistId(result.artists.items[0].data.uri.split(":")[2]);
-    console.log(artistId);
+    let result = await response.json();
+    return result.artists.items[0].data.uri.split(":")[2];
   };
 
   const getFeaturings = async () => {
-    console.log(artistId, "artistId");
+    const id = await getArtistId();
     const response = await fetch(
-      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${artistId}`,
+      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${id}`,
       {
         method: "GET",
         headers: {
@@ -37,39 +37,41 @@ export default function App() {
       }
     );
     const result = await response.json();
-    console.log(result, "result");
-    !result.errors &&
-      setFeaturings(result.data.artist.relatedContent.appearsOn.items);
-      console.log(result, "featurings")
+    return result.data.artist.relatedContent.appearsOn.items;
   };
-//FIXME: i have to click three times to get the result
   const checkAnswer = async () => {
     setLoading(true);
-    await getArtistId();
-    await getFeaturings();
+    const featuredWith = await getFeaturings();
+    setHasFeated(
+      featuredWith.some(
+        (feat) =>
+          feat.releases.items[0].artists.items[0].profile.name.toLowerCase() ===
+          currentArtist.toLowerCase()
+      )
+    );
+    setCurrentArtist(answer);
     setLoading(false);
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1>booba</h1>
-      <input
-        type="text"
-        className="border-black border-2"
-        onChange={(event) => setAnswer(event.target.value)}
-      />
-      <button onClick={checkAnswer}>Search</button>
-      <div>
-        {loading && <h2>checking featuring...</h2>}
-        {featurings &&
-          featurings.map((feat, index) => {
-            return (
-              <div key={index}>
-                <h2>{feat.releases.items[0].artists.items[0].profile.name}</h2>
-              </div>
-            );
-          })}
+    <div className="flex flex-col h-screen p-4 items-center justify-around bg-stone-300">
+      <div className="flex flex-col items-center gap-4">
+        <input
+          type="text"
+          className="text-3xl p-2 focus:outline-none shadow-sm text-center bg-transparent border-b-2 border-slate-700"
+          onChange={(event) => setAnswer(event.target.value)}
+        />
+        <button
+          onClick={checkAnswer}
+          className="text-3xl w-fit font-light shadow-md p-3 bg-cyan-100 rounded-lg text-slate-700"
+        >
+          Valider
+        </button>
       </div>
+      <h1 className="text-4xl p-4 uppercase font-mono tracking-wider">
+        {currentArtist}
+      </h1>
+      <ValidationText hasFeated={hasFeated} loading={loading}/>
     </div>
   );
 }
