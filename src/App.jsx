@@ -3,11 +3,11 @@ import { useState } from "react";
 export default function App() {
   const [artistId, setArtistId] = useState();
   const [answer, setAnswer] = useState();
-  const [featurings, setFeaturings] = useState();
+  const [featurings, setFeaturings] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const checkAnswer = async () => {
-    // fetch artist id
-    const responseId = await fetch(
+  const getArtistId = async () => {
+    const response = await fetch(
       `https://spotify23.p.rapidapi.com/search/?q=${answer}&type=artists&offset=0&limit=1`,
       {
         method: "GET",
@@ -18,14 +18,15 @@ export default function App() {
         },
       }
     );
-    const dataId = await responseId.json();
-    setArtistId(dataId.artists.items[0].data.uri.split(":")[2]);
+    const result = await response.json();
+    setArtistId(result.artists.items[0].data.uri.split(":")[2]);
+    console.log(artistId);
+  };
 
-    // fetch artist featurings
-    const responseFeat = await fetch(
-      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${
-        dataId.artists.items[0].data.uri.split(":")[2]
-      }`,
+  const getFeaturings = async () => {
+    console.log(artistId, "artistId");
+    const response = await fetch(
+      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${artistId}`,
       {
         method: "GET",
         headers: {
@@ -35,10 +36,18 @@ export default function App() {
         },
       }
     );
-
-    const dataFeat = await responseFeat.json();
-    setFeaturings(dataFeat);
-    console.log(dataFeat);
+    const result = await response.json();
+    console.log(result, "result");
+    !result.errors &&
+      setFeaturings(result.data.artist.relatedContent.appearsOn.items);
+      console.log(result, "featurings")
+  };
+//FIXME: i have to click three times to get the result
+  const checkAnswer = async () => {
+    setLoading(true);
+    await getArtistId();
+    await getFeaturings();
+    setLoading(false);
   };
 
   return (
@@ -50,11 +59,17 @@ export default function App() {
         onChange={(event) => setAnswer(event.target.value)}
       />
       <button onClick={checkAnswer}>Search</button>
-      {artistId && (
-        <div>
-          <h2>{artistId}</h2>
-        </div>
-      )}
+      <div>
+        {loading && <h2>checking featuring...</h2>}
+        {featurings &&
+          featurings.map((feat, index) => {
+            return (
+              <div key={index}>
+                <h2>{feat.releases.items[0].artists.items[0].profile.name}</h2>
+              </div>
+            );
+          })}
+      </div>
     </div>
   );
 }
