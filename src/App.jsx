@@ -4,7 +4,7 @@ import ValidationText from "./components/ValidationText";
 export default function App() {
   const [currentArtist, setCurrentArtist] = useState("booba");
   const [answer, setAnswer] = useState();
-  const [hasFeated, setHasFeated] = useState();
+  const [hasFeated, setHasFeated] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const getArtistId = async () => {
@@ -14,7 +14,7 @@ export default function App() {
         method: "GET",
         headers: {
           "X-RapidAPI-Key":
-            "058441d088mshaf86c5681fd5074p1d4e7cjsn0e487ad2d27a",
+            "e870647cf5mshfaba88a093b8a2bp196d84jsne18a2e7ea834",
           "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
         },
       }
@@ -31,7 +31,7 @@ export default function App() {
         method: "GET",
         headers: {
           "X-RapidAPI-Key":
-            "058441d088mshaf86c5681fd5074p1d4e7cjsn0e487ad2d27a",
+            "e870647cf5mshfaba88a093b8a2bp196d84jsne18a2e7ea834",
           "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
         },
       }
