@@ -49,7 +49,9 @@ export default function App() {
           currentArtist.toLowerCase()
       )
     );
-    setCurrentArtist(answer);
+    //FIXME: 
+    console.log(hasFeated)
+    hasFeated && setCurrentArtist(answer);
     setLoading(false);
   };
 
