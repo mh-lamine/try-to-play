@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Game() {
   const [currentArtist, setCurrentArtist] = useState("booba");
-  const [answer, setAnswer] = useState();
+  const [answer, setAnswer] = useState("");
   const [hasFeated, setHasFeated] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -19,12 +19,11 @@ export default function Game() {
         },
       }
     );
-    let result = await response.json();
+    const result = await response.json();
     return result.artists.items[0].data.uri.split(":")[2];
   };
 
-  const getFeaturings = async () => {
-    const id = await getArtistId();
+  const getFeaturings = async (id) => {
     const response = await fetch(
       `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${id}`,
       {
@@ -39,19 +38,21 @@ export default function Game() {
     const result = await response.json();
     return result.data.artist.relatedContent.appearsOn.items;
   };
+
   const checkAnswer = async () => {
     setLoading(true);
-    const featuredWith = await getFeaturings();
-    setHasFeated(
-      featuredWith.some(
-        (feat) =>
-          feat.releases.items[0].artists.items[0].profile.name.toLowerCase() ===
-          currentArtist.toLowerCase()
+    const id = await getArtistId();
+    const featuredWith = await getFeaturings(id);
+    const hasFeated = featuredWith.some((feat) =>
+      feat.releases.items[0].artists.items.some(
+        (artist) =>
+          artist.profile.name.toLowerCase() === currentArtist.toLowerCase()
       )
     );
-    //FIXME:
-    console.log(hasFeated);
-    hasFeated && setCurrentArtist(answer);
+    setHasFeated(hasFeated);
+    if (hasFeated) {
+      setCurrentArtist(answer);
+    }
     setLoading(false);
   };
 
