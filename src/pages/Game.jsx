@@ -1,59 +1,14 @@
 import ValidationText from "@/components/own/ValidationText";
 import { useState } from "react";
+import { useArtistFeature } from "@/hook/useArtistFeature"; // Adjust the path as needed
 
 export default function Game() {
   const [currentArtist, setCurrentArtist] = useState("booba");
   const [answer, setAnswer] = useState("");
-  const [hasFeated, setHasFeated] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, hasFeated, checkAnswer } = useArtistFeature();
 
-  const getArtistId = async () => {
-    const response = await fetch(
-      `https://spotify23.p.rapidapi.com/search/?q=${answer}&type=artists&offset=0&limit=1`,
-      {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "e870647cf5mshfaba88a093b8a2bp196d84jsne18a2e7ea834",
-          "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
-        },
-      }
-    );
-    const result = await response.json();
-    return result.artists.items[0].data.uri.split(":")[2];
-  };
-
-  const getFeaturings = async (id) => {
-    const response = await fetch(
-      `https://spotify23.p.rapidapi.com/artist_appears_on/?id=${id}`,
-      {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "e870647cf5mshfaba88a093b8a2bp196d84jsne18a2e7ea834",
-          "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
-        },
-      }
-    );
-    const result = await response.json();
-    return result.data.artist.relatedContent.appearsOn.items;
-  };
-
-  const checkAnswer = async () => {
-    setLoading(true);
-    const id = await getArtistId();
-    const featuredWith = await getFeaturings(id);
-    const hasFeated = featuredWith.some((feat) =>
-      feat.releases.items[0].artists.items.some(
-        (artist) =>
-          artist.profile.name.toLowerCase() === currentArtist.toLowerCase()
-      )
-    );
-    setHasFeated(hasFeated);
-    if (hasFeated) {
-      setCurrentArtist(answer);
-    }
-    setLoading(false);
+  const handleCheckAnswer = () => {
+    checkAnswer(answer, currentArtist, setCurrentArtist);
   };
 
   return (
@@ -65,7 +20,7 @@ export default function Game() {
           onChange={(event) => setAnswer(event.target.value)}
         />
         <button
-          onClick={checkAnswer}
+          onClick={handleCheckAnswer}
           className="text-3xl w-fit font-light shadow-md p-3 bg-cyan-100 rounded-lg text-slate-700"
         >
           Valider
