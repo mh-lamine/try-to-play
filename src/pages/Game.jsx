@@ -89,17 +89,22 @@ export default function Game() {
   };
 
 
-  if (!players | players.length === 0) return ( 
+  if (!players | players.length === 0) return (
     <div className="flex flex-col h-screen p-4 items-center justify-center gap-y-3">
       <h1 className="text-xl p-4 uppercase font-mono tracking-wider">
-        Veuillez d'abord ajouter des joueurs
+        Veuillez d&apos;abord ajouter des joueurs
       </h1>
-      <Button className="w-1/2" onClick={(e) => {
-        e.preventDefault();
-        nav('/add_player')
-      }}>Ajouter des joueurs</Button>
+      <Button
+        className="w-1/2"
+        onClick={(e) => {
+          e.preventDefault();
+          nav("/add_player");
+        }}
+      >
+        Ajouter des joueurs
+      </Button>
     </div>
-  )
+  );
 
 
   if (game.isGameStarted === false && game.winner === null) return (
