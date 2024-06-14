@@ -10,12 +10,14 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 import { Button } from '../ui/button';
-import { PlayersContext } from '@/contexts_providers/players';
 import usePlayers from '@/hook/usePlayers';
+import { GameContext } from '@/contexts_providers/game';
 
 export default function RemovePlayer() {
-    const contextPlayer = useContext(PlayersContext)
-    const players = contextPlayer.players
+    const { game } = useContext(GameContext)
+    const players = Object.values(game.players).filter(player => player.playing)
+
+
     const { handlePlayerSelect, handleRemovePlayer } = usePlayers()
 
     if (!players || players.length === 0) return (
@@ -37,16 +39,15 @@ export default function RemovePlayer() {
                         <Label htmlFor="player">Player to Remove</Label>
                         <Select id="player" onValueChange={handlePlayerSelect}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder={(players[0].name).toString()} />
+                                <SelectValue placeholder='Choose Player to Remove...' />
                             </SelectTrigger>
                             <SelectContent>
+                                <div className='bg-black bg-blue-600 bg-red-600 bg-green-600 bg-yellow-600 bg-purple-600 bg-pink-600 hidden'></div>
                                 {players.map((player, index) => {
                                     return (
-                                        <SelectItem value={(player.key).toString()} key={index}>
+                                        <SelectItem value={player.name} key={index}>
                                             <div className="flex items-center gap-2 px-2 py-1">
-                                                <div className=" bg-white border rounded-full">
-                                                    <img src={player.avatar === 'default' ? defaultAvatar : player.avatar} alt='avatar' className='w-4 h-4 m-1'/>
-                                                </div>
+                                                <div className={`w-4 h-4 ${player.color === 'black' ? 'bg-black' : `bg-${player.color}-600`} rounded-full`}></div>
                                                 <span>{player.name}</span>
                                             </div>
                                         </SelectItem>
