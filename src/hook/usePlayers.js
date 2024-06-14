@@ -23,15 +23,31 @@ export default function usePlayers() {
       color: color,
       playing: true
     }
+
+    const isSameName = Object.values(players).some(player => player.name === playerToAdd.name)
+    if (isSameName) {
+      return {
+        type: 'error',
+        message: 'Player with the same name already exists'
+      }
+    }
     actions.addPlayer(playerToAdd)
-    
+    return {
+      type: 'success',
+      message: 'Player added successfully'
+    }
+  }
+
+  const handleRemoveFormSubmit = (e) => {
+    e.preventDefault()
+    if (!selectedPlayer) return { type: 'error', message: 'Please select a player to remove' }
+    actions.removePlayer(selectedPlayer.id)
+    return { type: 'success', message: 'Player removed successfully' }
   }
 
 
-  const handlePlayerSelect = (event) => {
-    console.log(event)
-    // const player = players.find(player => player.key === parseInt(event))
-    // setSelectedPlayer(player)
+  const handlePlayerSelect = (player) => {
+    setSelectedPlayer(player)
   }
 
   const handleColorChange = (color) => {
@@ -46,6 +62,7 @@ export default function usePlayers() {
     handleColorChange,
     handleAddFormSubmit,
     handlePlayerSelect,
+    handleRemoveFormSubmit
   }
 
 }

@@ -85,7 +85,7 @@ export default function AddPlayer() {
                             </SelectContent>
                         </Select>
 
-                        {/* {resMessage && <FormResMessage resMessage={resMessage}/>} */}
+                        {resMessage && <FormResMessage resMessage={resMessage}/>}
                         <Button type='submit'>Ajouter le joueur</Button>
                     </div>
                 </form>

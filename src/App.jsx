@@ -1,7 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import FixedBarNav from "./components/own/FixedBarNav";
 import ShowPlayers from "./components/own/ShowPlayers";
-import { PlayersProvider } from "./contexts_providers/players";
 import AppRouter from "./lib/router";
 import { GameProvider } from "./contexts_providers/game";
 

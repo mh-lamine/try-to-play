@@ -1,5 +1,4 @@
 import React, { useContext } from 'react'
-import defaultAvatar from '@/assets/default_avatar.svg';
 import { GameContext } from '@/contexts_providers/game';
 
 export default function ShowPlayers() {
@@ -10,16 +9,13 @@ export default function ShowPlayers() {
     
     if (!players) return
 
-    const playersList = Object.keys(players)
-
+    const playersList = Object.values(players).filter(player => player.playing)
 
 
     return (
-        playersList.map((playerKey, index) => {
-            const player = players[playerKey]
-            if (!player.playing) return
+        playersList.map((player, index) => {
 
-            const classNameTopBottom = (player.id === 1) | (player.id === 2) ? 'top-0 rounded-b-lg' : 'bottom-0 rounded-t-lg'
+            const classNameTopBottom = (index === 0) | (index === 1) ? 'top-0 rounded-b-lg' : 'bottom-0 rounded-t-lg'
             const classNameLeftRight = index % 2 === 0 ? 'left-0 bg-gradient-to-r justify-end' : 'right-0 bg-gradient-to-l justify-start'
             const classNameBgColor = ((player.color === 'black')) ? `from-white to-${player.color}` : `from-${player.color}-50 to-${player.color}-600`
             const classNameTextColor = player.color === 'black' ? 'text-white' : 'text-black'

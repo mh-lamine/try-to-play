@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { Card } from '../ui/card'
 import { Label } from '@/components/ui/label';
-import defaultAvatar from '@/assets/default_avatar.svg';
 import {
     Select,
     SelectContent,
@@ -12,13 +11,25 @@ import {
 import { Button } from '../ui/button';
 import usePlayers from '@/hook/usePlayers';
 import { GameContext } from '@/contexts_providers/game';
+import FormResMessage from './FormResMessage';
 
 export default function RemovePlayer() {
+    const [resMessage, setResMessage] = React.useState({
+        type: '',
+        message: ''
+    })
     const { game } = useContext(GameContext)
     const players = Object.values(game.players).filter(player => player.playing)
 
 
-    const { handlePlayerSelect, handleRemovePlayer } = usePlayers()
+    const { handlePlayerSelect, handleRemoveFormSubmit } = usePlayers()
+
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault()
+        const resMessageResponse = handleRemoveFormSubmit(e)
+        setResMessage(resMessageResponse)
+    }
 
     if (!players || players.length === 0) return (
         <div className='fixed h-full w-full flex justify-center items-center'>
@@ -34,10 +45,12 @@ export default function RemovePlayer() {
         <div className='fixed h-full w-full flex justify-center items-center'>
             <Card className='w-1/2 p-10'>
                 <h2 className='text-3xl capitalize text-center'>Remove a Player</h2>
-                <form onSubmit={handleRemovePlayer}>
+                <form onSubmit={handleFormSubmit}>
                     <div className='flex flex-col gap-y-5 mt-5'>
                         <Label htmlFor="player">Player to Remove</Label>
-                        <Select id="player" onValueChange={handlePlayerSelect}>
+                        <Select id="player" onValueChange={(val) => {
+                            handlePlayerSelect(players.find(player => player.name === val))
+                        }}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder='Choose Player to Remove...' />
                             </SelectTrigger>
@@ -55,6 +68,7 @@ export default function RemovePlayer() {
                                 })}
                             </SelectContent>
                         </Select>
+                        {resMessage && <FormResMessage resMessage={resMessage}/>}
                         <Button className='w-full'>Remove</Button>
                     </div>
                 </form>
