@@ -1,7 +1,6 @@
 import React from 'react'
 import { HiUserRemove } from "react-icons/hi";
 import { HiUserAdd } from "react-icons/hi";
-import { IoIosSettings } from "react-icons/io";
 import { FaGamepad } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
 import {
@@ -37,17 +36,10 @@ export default function FixedBarNav() {
                     </TooltipText>
                 </NavLink>                
             </div>
-            <div className='pr-2 border-r border-black cursor-pointer'>
+            <div className='cursor-pointer'>
                 <NavLink to='/remove_player'>
                     <TooltipText text='Retirer un Joueur'>
                         <HiUserRemove  className='w-8 h-9 hover:translate-y-[-5px] hover:scale-125 hover:mx-5'/>
-                    </TooltipText>
-                </NavLink>
-            </div>
-            <div className='pr-2 cursor-pointer'>
-                <NavLink to='/settings'>
-                    <TooltipText text='Paramètres'>
-                        <IoIosSettings  className='w-8 h-9 hover:translate-y-[-5px] hover:scale-125 hover:mx-5'/>
                     </TooltipText>
                 </NavLink>
             </div>

@@ -4,6 +4,7 @@ import usePlayers from '@/hook/usePlayers'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { FaGamepad } from "react-icons/fa6";
 import {
     Select,
     SelectContent,
@@ -12,7 +13,7 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 import FormResMessage from './FormResMessage'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 export default function AddPlayer() {
     const [resMessage, setResMessage] = React.useState({
@@ -21,7 +22,7 @@ export default function AddPlayer() {
     })
 
     const { playersCount, handleColorChange, handleAddFormSubmit } = usePlayers()
-
+    const nav = useNavigate()
 
     
     const handleFormSubmit = (e) => {
@@ -86,7 +87,11 @@ export default function AddPlayer() {
                         </Select>
 
                         {resMessage && <FormResMessage resMessage={resMessage}/>}
-                        <Button type='submit'>Ajouter le joueur</Button>
+                        <Button className='flex items-center gap-x-2' disabled={playersCount < 2} onClick={(e) => {
+                            e.preventDefault()
+                            nav('/game')
+                        }}>Jouer <FaGamepad className='w-6 h-6'/></Button>
+                        <Button disabled={playersCount > 3} type='submit'>Ajouter le joueur</Button>
                     </div>
                 </form>
                 

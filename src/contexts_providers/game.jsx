@@ -5,36 +5,35 @@ export const GameContext = createContext({
         players: {
             1: {
                 id: 1,
-                name: 'Player 1',
                 score: 0,
+                name: 'Player 1',
                 color: 'black',
                 playing: false
             },
             2: {
                 id: 2,
-                name: 'Player 2',
                 score: 0,
+                name: 'Player 2',
                 color: 'red',
                 playing: false
             },
             3: {
                 id: 3,
-                name: 'Player 3',
                 score: 0,
+                name: 'Player 3',
                 color: 'green',
                 playing: false
             },
             4: {
                 id: 4,
-                name: 'Player 4',
                 score: 0,
+                name: 'Player 4',
                 color: 'blue',
                 playing: false
             }
         },
         current_player : 1,
         isGameStarted : false,
-        isGameEnded : false,
         winner: null
     },
     actions: {
@@ -43,11 +42,9 @@ export const GameContext = createContext({
         addPlayer: () => {},
         removePlayer: () => {},
         startGame: () => {},
+        updateScore: () => {},
         endGame: () => {},
-        resetGame: () => {},
-        updatePlayerScore: () => {},
-        updatePlayerName: () => {},
-        updateWinner: () => {}
+        resetGame: () => {}
     }
 })
 
@@ -57,43 +54,43 @@ export function GameProvider({children}) {
         players: {
             player1: {
                 id: 1,
-                name: 'Player 1',
                 score: 0,
+                name: 'Player 1',
                 color: 'black',
                 playing: false
             },
             player2: {
                 id: 2,
-                name: 'Player 2',
                 score: 0,
+                name: 'Player 2',
                 color: 'red',
                 playing: false
             },
             player3: {
                 id: 3,
-                name: 'Player 3',
                 score: 0,
+                name: 'Player 3',
                 color: 'green',
                 playing: false
             },
             player4: {
                 id: 4,
-                name: 'Player 4',
                 score: 0,
+                name: 'Player 4',
                 color: 'blue',
                 playing: false
             }
         },
         current_player : 1,
         isGameStarted : false,
-        isGameEnded : false,
         winner: null
     })
 
     const nextPlayer = () => {
+        const playersPlaying = Object.values(game.players).filter(player => player.playing)
         setGame({
             ...game,
-            current_player: game.current_player === 4 ? 1 : game.current_player + 1
+            current_player: game.current_player === playersPlaying.length ? 1 : game.current_player + 1
         })
     }
 
@@ -112,25 +109,17 @@ export function GameProvider({children}) {
     }
 
     const endGame = () => {
+        const playersPlaying = Object.values(game.players).filter(player => player.playing)
+        const winner = playersPlaying.reduce((prev, current) => (prev.score > current.score) ? prev : current)
+
         setGame({
             ...game,
-            isGameEnded: true
+            isGameStarted: false,
+            winner: winner
         })
     }
 
-    const changePlayerInfos = (playerId, color, name) => {
-        setGame({
-            ...game,
-            players: {
-                ...game.players,
-                [`player${playerId}`]: {
-                    ...game.players[`player${playerId}`],
-                    name,
-                    color
-                }
-            }
-        })
-    }
+
 
     const addPlayer = (playerInfos) => {
         const playerKey = Object.values(game.players).filter(player => player.playing).length + 1
@@ -155,7 +144,6 @@ export function GameProvider({children}) {
     const removePlayer = (playerId) => {
         const playerToEdit = game.players[`player${playerId}`]
         playerToEdit.playing = false
-        playerToEdit.score = 0
         playerToEdit.name = `Player ${playerId}`
 
         setGame({
@@ -169,49 +157,68 @@ export function GameProvider({children}) {
 
 
     const resetGame = () => {
+        const players = Object.values(game.players)
         setGame({
+            players: {
+                1: {
+                    id: 1,
+                    score: 0,
+                    name: players[0].name,
+                    color: 'black',
+                    playing: false
+                },
+                2: {
+                    id: 2,
+                    score: 0,
+                    name: 'Player 2',
+                    color: 'red',
+                    playing: false
+                },
+                3: {
+                    id: 3,
+                    score: 0,
+                    name: 'Player 3',
+                    color: 'green',
+                    playing: false
+                },
+                4: {
+                    id: 4,
+                    score: 0,
+                    name: 'Player 4',
+                    color: 'blue',
+                    playing: false
+                }
+            },
             current_player : 1,
             isGameStarted : false,
-            isGameEnded : false,
             winner: null
         })
     }
 
-    const updatePlayerScore = (playerId, point) => {
-        const parsedPoint = parseInt(point)
-        if (isNaN(parsedPoint)) return
 
-        setGame({
-            ...game,
-            players: {
-                ...game.players,
-                [`player${playerId}`]: {
-                    ...game.players[`player${playerId}`],
-                    score: game.players[`player${playerId}`].score + parsedPoint
+    const updateScore = (playerId, success) => {
+        const playerToEdit = game.players[`player${playerId}`]
+        playerToEdit.score = success ? playerToEdit.score + 1 : playerToEdit.score
+
+        if (playerToEdit.score === 10){
+            endGame()
+        }
+        else{
+            setGame({
+                ...game,
+                players: {
+                    ...game.players,
+                    [`player${playerId}`]: playerToEdit
                 }
-            }
-        })
+            })
+        }
+
     }
 
-    const updatePlayerName = (playerId, name) => {
-        setGame({
-            ...game,
-            players: {
-                ...game.players,
-                [`player${playerId}`]: {
-                    ...game.players[`player${playerId}`],
-                    name
-                }
-            }
-        })
-    }
 
-    const updateWinner = (playerId) => {
-        setGame({
-            ...game,
-            winner: game.players[`player${playerId}`]
-        })
-    }
+
+
+
 
     const actions = {
         nextPlayer,
@@ -219,11 +226,9 @@ export function GameProvider({children}) {
         addPlayer,
         removePlayer,
         startGame,
+        updateScore,
         endGame,
-        resetGame,
-        updatePlayerScore,
-        updatePlayerName,
-        updateWinner
+        resetGame
     }
 
 

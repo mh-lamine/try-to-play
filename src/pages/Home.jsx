@@ -14,8 +14,8 @@ export default function Home() {
         <Card className="px-5 py-10 w-2/3 flex flex-col items-center gap-y-5">
             <h1 className='text-4xl'>Roland Gamos</h1>
             <p className='text-center'>Bienvenue sur le site du jeu Roland Gamos ! Actuellement, {playersPlaying.length} joueurs sont enregistrés. Pour commencer à jouer, ajouter au moins 2 joueurs. </p>
-            <div className='flex gap-x-3 w-full'>
-                <Button className="w-full" disabled={playersPlaying.length < 4 ? false : true}><NavLink to='/add_player' className='w-full'>Ajouter {2 - parseInt(playersPlaying.length)} Joueurs</NavLink></Button>
+            <div className={'flex gap-x-3' + playersPlaying.length < 2 ? 'w-full' : 'w-1/2'}>
+                {playersPlaying.length < 2 && <Button className="w-full" disabled={playersPlaying.length < 4 ? false : true}><NavLink to='/add_player' className='w-full'>Ajouter {2 - parseInt(playersPlaying.length)} Joueurs</NavLink></Button>}
                 <Button className="w-full" disabled={playersPlaying.length > 0 ? false : true}><NavLink to='/game' className='w-full'>Jouer</NavLink></Button>
             </div>
         </Card>
